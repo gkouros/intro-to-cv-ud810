@@ -7,12 +7,11 @@ def hough_peaks(H, numpeaks=1, threshold=100, nhood_size=5):
     for i in range(numpeaks):
         _,max_val,_,max_loc = cv2.minMaxLoc(temp_H) # find maximum peak
         if max_val > threshold:
-            peaks[i,0:2] = max_loc
+            peaks[i] = max_loc
             (c,r) = max_loc
-            t = nhood_size
-            # clear neighbourhood
-            temp_H[int(r-t/2):int(r+t/2+1), int(c-t/2):int(c+t/2+1)] = 0
+            t = nhood_size/2
+            temp_H[int(r-t):int(r+t+1), int(c-t):int(c+t+1)] = 0  # clear nhood
         else:
             peaks = peaks[:i]
             break
-    return peaks
+    return peaks[:,::-1]
