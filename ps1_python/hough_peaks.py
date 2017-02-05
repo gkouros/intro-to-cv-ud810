@@ -1,6 +1,9 @@
 import numpy as np
 import cv2
 
+def clip(idx):
+    return int(max(idx,0))
+
 def hough_peaks(H, numpeaks=1, threshold=100, nhood_size=5):
     peaks = np.zeros((numpeaks,2), dtype=np.uint64)
     temp_H = H.copy()
@@ -9,8 +12,8 @@ def hough_peaks(H, numpeaks=1, threshold=100, nhood_size=5):
         if max_val > threshold:
             peaks[i] = max_loc
             (c,r) = max_loc
-            t = nhood_size/2
-            temp_H[int(r-t):int(r+t+1), int(c-t):int(c+t+1)] = 0  # clear nhood
+            t = nhood_size//2.0
+            temp_H[clip(r-t):int(r+t+1), clip(c-t):int(c+t+1)] = 0
         else:
             peaks = peaks[:i]
             break
