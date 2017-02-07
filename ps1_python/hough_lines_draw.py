@@ -11,3 +11,4 @@ def hough_lines_draw(img, outfile, peaks, rhos, thetas):
         pt2 = tuple((pt0 - 1000 * np.array([-b,a])).astype(int))
         cv2.line(img, pt1, pt2, (0,255,0), 2)
     cv2.imwrite(outfile, img)
+    return img
