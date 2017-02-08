@@ -23,6 +23,6 @@ def find_circles(edge_img, radius_range=[1,2], threshold=100, nhood_size=10):
         #  cv2.imshow('image', edge_img); cv2.waitKey(0); cv2.destroyAllWindows()
         num_circles += peaks.shape[0]
         print('Progress: %d%% - Circles: %d\033[F\r'%(100*i/len(radii), num_circles))
-    print('Circles detected: %d'%(num_circles))
+    print('Circles detected: %d          '%(num_circles))
     centers = np.array(centers)
     return centers, valid_radii.astype(np.uint)

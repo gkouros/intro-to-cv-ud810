@@ -39,7 +39,7 @@ from auto_canny import *
 #  min_val = 20; max_val = 2 * min_val
 #  noisy_edge_img = cv2.Canny(noisy_img, min_val, max_val)
 #  edge_img = cv2.Canny(smoothed_img, min_val, max_val)
-#  3c: apply hough line detection to the smoothed image
+# 3c: apply hough line detection to the smoothed image
 #  H, thetas, rhos = hough_lines_acc(edge_img)
 #  peaks = hough_peaks(H, numpeaks=20, threshold=50, nhood_size=150)
 #  for peak in peaks:
@@ -75,20 +75,18 @@ from auto_canny import *
 #  gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 #  smoothed_img = cv2.GaussianBlur(gray_img, (9,9), 3)  # smooth image
 #  cv2.imwrite('output/ps1-5-a-1.png', smoothed_img)
-#  edge_img = cv2.Canny(smoothed_img, 40, 80)  # detect edges
+#  edge_img = auto_canny(smoothed_img, 0.5)
 #  cv2.imwrite('output/ps1-5-a-2.png', edge_img)
-##  smoothed_img = cv2.bilateralFilter(gray_img, 10, 40, 30)
-## edge_img = cv2.Canny(smoothed_img, 100, 200)
 
 # detect circles with radius = 20 and save image
 #  H_20 = hough_circles_acc(edge_img, 20)
-#  peaks = hough_peaks(H_20, numpeaks=10, threshold=180, nhood_size=100)
+#  peaks = hough_peaks(H_20, numpeaks=10, threshold=140, nhood_size=100)
 #  img_circles = img.copy()
 #  img_circles = hough_circles_draw(img_circles, 'output/ps1-5-a-3.png', peaks, 20)
 
 # 5b: detect circles in the range [20 50]
 #  start_time = time.time()
-#  centers, radii = find_circles(edge_img, [20, 30])
+#  centers, radii = find_circles(edge_img, [20, 50], threshold=153, nhood_size=10)
 #  img_circles = img.copy()
 #  for i in range(len(radii)):
     #  img_circles = hough_circles_draw(img_circles, 'output/ps1-5-b-1.png',
@@ -102,9 +100,11 @@ from auto_canny import *
 #  edge_img = cv2.Canny(smoothed_img, 50, 100)
 #  H, thetas, rhos = hough_lines_acc(edge_img)
 #  peaks = hough_peaks(H, numpeaks=10, threshold=120, nhood_size=50)
+#  hl_img = cv2.cvtColor(smoothed_img, cv2.COLOR_GRAY2BGR)
+#  hough_lines_draw(hl_img, 'output/ps1-6-a-1.png', peaks, rhos, thetas)
 #  peaks = filter_lines(peaks, thetas, rhos, 5, 50)
-#  highlighted_image = cv2.cvtColor(smoothed_img, cv2.COLOR_GRAY2BGR)
-#  hough_lines_draw(highlighted_image, 'output/ps1-6-a-1.png', peaks, rhos, thetas)
+#  hl_img2 = cv2.cvtColor(smoothed_img, cv2.COLOR_GRAY2BGR)
+#  hough_lines_draw(hl_img2, 'output/ps1-6-c-1.png', peaks, rhos, thetas)
 
 # 7: Apply Hough circle detection on the cluttered image
 #  img = cv2.imread('input/ps1-input2.png')
@@ -113,7 +113,7 @@ from auto_canny import *
 #  smoothed_img = cv2.blur(eroded_img, (3,3))
 #  edge_img = auto_canny(smoothed_img, 0.5)
 #  start_time = time.time()
-#  centers, radii = find_circles(edge_img, [20, 40])
+#  centers, radii = find_circles(edge_img, [20, 40], threshold=135, nhood_size=10)
 #  img_circles = img.copy()
 #  for i in range(len(radii)):
     #  img_circles = hough_circles_draw(img_circles, 'output/ps1-7-a-1.png',
@@ -125,24 +125,27 @@ img = cv2.imread('input/ps1-input3.png', cv2.IMREAD_COLOR)
 smoothed_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 smoothed_img = cv2.erode(smoothed_img, np.ones((3,)*2,np.uint8), 1)
 smoothed_img = cv2.GaussianBlur(smoothed_img, (3,)*2, 2)
-edge_img = cv2.Canny(smoothed_img, 40, 100)
+edge_img = cv2.Canny(smoothed_img, 40, 80)
 #  cv2.imshow("smooth and edge images", np.hstack([smoothed_img, edge_img]))
 #  cv2.waitKey(0); cv2.destroyAllWindows()
 
 start_time = time.time()
 # Detect lines
 H, thetas, rhos = hough_lines_acc(edge_img)
-peaks = hough_peaks(H, numpeaks=10, threshold=105, nhood_size=20)
-#  peaks = filter_lines(peaks, thetas, rhos, 1, 500)
-img_lines = hough_lines_draw(img, 'output/ps1-8-a-1.png', peaks, rhos, thetas)
+peaks = hough_peaks(H, numpeaks=40, threshold=105, nhood_size=40)
+peaks = filter_lines(peaks, thetas, rhos, 3, 24)
+img_hl = hough_lines_draw(img, 'output/ps1-8-a-1.png', peaks, rhos, thetas)
+#  cv2.imwrite('output/temp.png', np.hstack([edge_img, img_lines[:,:,1]]))
 #  cv2.imshow("smooth and edge images", np.hstack([smoothed_img, edge_img, img_lines[:,:,1]]))
 #  cv2.waitKey(0); cv2.destroyAllWindows()
+
 # Detect circles
-centers, radii = find_circles(edge_img, [20, 40])
+centers, radii = find_circles(edge_img, [20, 40], threshold=110, nhood_size=50)
 img_circles = img.copy()
 for i in range(len(radii)):
-    img_circles = hough_circles_draw(img_circles, 'output/ps1-8-a-1.png',
+    img_hl = hough_circles_draw(img_hl, 'output/ps1-8-a-1.png',
                                      centers[i], radii[i])
+#  cv2.imwrite('output/temp.png', np.hstack([edge_img, img_circles[:,:,1]]))
 print('Time elapsed: %f', time.time()-start_time)
 
 #  TODO: try to fix the circle problem (circle -> ellipsis) (line -> line -> no problem)
