@@ -2,14 +2,14 @@ import numpy as np
 import cv2
 from numpy.lib.stride_tricks import as_strided
 
-def my_ssd(t, x):
+def my_ssd(x, t):
     tc = t.shape[1]
     xc = x.shape[1]
-    s = np.array([np.sum((t - x[:,i:i+tc]) ** 2) for i in range(xc - tc + 1)],
-                 dtype=np.float32)
+    s = np.array([np.sum((t - x[:,i-tc/2:i+tc/2+1]) ** 2)
+                  for i in range(tc / 2, xc - tc/2)], dtype=np.float32)
     return s[None,:]
 
-def sumsqdiff2(template, input_image, valid_mask=None):
+def sumsqdiff2(input_image, template, valid_mask=None):
     '''
     ssd implementation borrowed from:
         http://stackoverflow.com/questions/17881489/faster-way-to-calculate-sum-of-squared-difference-between-an-image-m-n-and-a
@@ -42,17 +42,20 @@ def disparity_ssd(L, R, template_size=3):
 
     im_rows = L.shape[0]; im_cols = L.shape[1]
     tpl_rows = tpl_cols = template_size
-    D_L = np.ndarray((im_rows - tpl_rows + 1, im_cols - tpl_cols + 1),
+    D_L = np.zeros(L.shape,
                      dtype=np.float32)
-    for r in range(D_L.shape[0]):
-        for c in range(D_L.shape[1]):
-            tpl = L[r:r+tpl_rows, c:c+tpl_cols].astype(np.float32)
-            R_strip = R[r:r+tpl_rows, :].astype(np.float32)
-            #  res = my_ssd(tpl, R_strip)
-            #  res = sumsqdiff2(tpl, R_strip)
-            res = cv2.matchTemplate(R_strip, tpl, method=cv2.TM_SQDIFF)
+    for r in range(tpl_rows/2, im_rows-tpl_rows/2):
+        for c in range(tpl_cols/2, im_cols-tpl_cols/2):
+            tpl = L[r-tpl_rows/2:r+tpl_rows/2+1, c-tpl_cols/2:c+tpl_cols/2+1].astype(np.float32)
+            R_strip = R[r-tpl_rows/2:r+tpl_rows/2+1, :].astype(np.float32)
+            #  res = my_ssd(R_strip, tpl)  # slow
+            #  res = sumsqdiff2(R_strip, tpl) # faster
+            res = cv2.matchTemplate(R_strip, tpl, method=cv2.TM_SQDIFF) # fastest
             _,_,min_loc,_ = cv2.minMaxLoc(res)
-            D_L[r, c] = min_loc[0] - c
+#TODO cost function cost = res + lambda * disparity (punishes far away matches)
+            D_L[r, c] = min_loc[0] + tpl_cols / 2 - c
+    D_L = D_L[tpl_rows/2:im_rows-tpl_rows/2, tpl_cols/2:im_cols-tpl_cols/2]
+    D_L = cv2.copyMakeBorder(D_L, tpl_rows/2, tpl_rows/2, tpl_cols/2, tpl_cols/2, borderType=cv2.BORDER_REPLICATE)
     return D_L
 
 
