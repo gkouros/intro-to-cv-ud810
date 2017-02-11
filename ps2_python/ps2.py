@@ -12,8 +12,8 @@ def ps2_1():
     L = cv2.imread('input/pair0-L.png', cv2.IMREAD_GRAYSCALE) * (1.0 / 255.0)
     R = cv2.imread('input/pair0-R.png', cv2.IMREAD_GRAYSCALE) * (1.0 / 255.0)
     # Compute disparity (using method disparity_ssd defined in disparity_ssd.py)
-    D_L = disparity_ssd(L, R, 15)
-    D_R = disparity_ssd(R, L, 15)
+    D_L = disparity_ssd(L, R, block_size=9, disparity_range=30)
+    D_R = disparity_ssd(R, L, block_size=9, disparity_range=30)
     # shift and scale disparity maps
     D_L = cv2.normalize(D_L, D_L, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX,
                         dtype=cv2.CV_8U)
@@ -29,16 +29,16 @@ def ps2_2():
     L = cv2.imread('input/pair1-L.png', cv2.IMREAD_GRAYSCALE) * (1.0 / 255.0)
     R = cv2.imread('input/pair1-R.png', cv2.IMREAD_GRAYSCALE) * (1.0 / 255.0)
     # compute disparity maps
-    D_L = disparity_ssd(L, R, 15)
-    D_R = disparity_ssd(R, L, 15)
+    D_L = disparity_ssd(L, R, block_size=15, disparity_range=100, lambda_factor=0.1)
+    #  D_R = disparity_ssd(R, L, block_size=15, disparity_range=100, lambda_factor=0.1)
     # shift and scale disparity maps
     D_L = cv2.normalize(D_L, D_L, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX,
                         dtype=cv2.CV_8U)
-    D_R = cv2.normalize(D_R, D_R, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX,
-                        dtype=cv2.CV_8U)
+    #  D_R = cv2.normalize(D_R, D_R, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX,
+                        #  dtype=cv2.CV_8U)
     # save disparity maps
     cv2.imwrite('output/ps2-2-a-1.png', D_L)
-    cv2.imwrite('output/ps2-2-a-2.png', D_R)
+    #  cv2.imwrite('output/ps2-2-a-2.png', D_R)
 '''
 The disparity maps produces using ssd differ a lot to the ground truth maps in
 valua, while at the same time having smaller size due to the application of the

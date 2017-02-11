@@ -30,7 +30,7 @@ def sumsqdiff2(input_image, template, valid_mask=None):
     return ssd
 
 
-def disparity_ssd(L, R, template_size=3):
+def disparity_ssd(L, R, block_size=3, disparity_range=30, lambda_factor=0.1):
     """Compute disparity map D(y, x) such that: L(y, x) = R(y, x + D(y, x))
 
     Params:
@@ -40,22 +40,33 @@ def disparity_ssd(L, R, template_size=3):
     Returns: Disparity map, same size as L, R
     """
 
-    im_rows = L.shape[0]; im_cols = L.shape[1]
-    tpl_rows = tpl_cols = template_size
+    im_rows, im_cols = L.shape
+    tpl_rows = tpl_cols = block_size
     D_L = np.zeros(L.shape,
                      dtype=np.float32)
-    for r in range(tpl_rows/2, im_rows-tpl_rows/2):
-        for c in range(tpl_cols/2, im_cols-tpl_cols/2):
-            tpl = L[r-tpl_rows/2:r+tpl_rows/2+1, c-tpl_cols/2:c+tpl_cols/2+1].astype(np.float32)
-            R_strip = R[r-tpl_rows/2:r+tpl_rows/2+1, :].astype(np.float32)
-            #  res = my_ssd(R_strip, tpl)  # slow
-            #  res = sumsqdiff2(R_strip, tpl) # faster
-            res = cv2.matchTemplate(R_strip, tpl, method=cv2.TM_SQDIFF) # fastest
-            _,_,min_loc,_ = cv2.minMaxLoc(res)
-#TODO cost function cost = res + lambda * disparity (punishes far away matches)
-            D_L[r, c] = min_loc[0] + tpl_cols / 2 - c
-    D_L = D_L[tpl_rows/2:im_rows-tpl_rows/2, tpl_cols/2:im_cols-tpl_cols/2]
-    D_L = cv2.copyMakeBorder(D_L, tpl_rows/2, tpl_rows/2, tpl_cols/2, tpl_cols/2, borderType=cv2.BORDER_REPLICATE)
+    for r in range(tpl_rows/2, im_rows-tpl_rows/2+1):
+        tr_min, tr_max = max(r-tpl_rows/2, 0), min(r+tpl_rows/2+1, im_rows)
+        for c in range(tpl_cols/2, im_cols-tpl_cols/2+1):
+            # get template
+            tc_min = max(c-tpl_cols/2, 0)
+            tc_max = min(c+tpl_cols/2+1, im_cols)
+            tpl = L[tr_min:tr_max, tc_min:tc_max].astype(np.float32)
+            # get R strip in a window with width=disparity_range
+            rc_min = max(c-disparity_range/2, 0)
+            rc_max = min(c+disparity_range/2+1, im_cols)
+            R_strip = R[tr_min:tr_max, rc_min:rc_max].astype(np.float32)
+            #  error = my_ssd(R_strip, tpl)  # slow
+            #  error = sumsqdiff2(R_strip, tpl) # faster
+            error = cv2.matchTemplate(R_strip, tpl, method=cv2.TM_SQDIFF) # fastest
+            c_tf = max(c-rc_min-tpl_cols/2, 0)
+            dist = np.arange(error.shape[1]) - c_tf
+            cost = error + np.abs(dist) * lambda_factor
+            _,_,min_loc,_ = cv2.minMaxLoc(cost)
+            D_L[r, c] = dist[min_loc[0]]
+
+    # replicate
+    D_L = cv2.copyMakeBorder(D_L[tpl_rows/2:im_rows-tpl_rows/2,
+                                 tpl_cols/2:im_cols-tpl_cols/2],
+                             tpl_rows/2, tpl_rows/2, tpl_cols/2,
+                             tpl_cols/2, borderType=cv2.BORDER_REPLICATE)
     return D_L
-
-
