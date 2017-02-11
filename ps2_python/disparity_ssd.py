@@ -30,7 +30,7 @@ def sumsqdiff2(input_image, template, valid_mask=None):
     return ssd
 
 
-def disparity_ssd(L, R, block_size=3, disparity_range=30, lambda_factor=0.1):
+def disparity_ssd(L, R, block_size=5, disparity_range=30, lambda_factor=0):
     """Compute disparity map D(y, x) such that: L(y, x) = R(y, x + D(y, x))
 
     Params:
@@ -42,11 +42,12 @@ def disparity_ssd(L, R, block_size=3, disparity_range=30, lambda_factor=0.1):
 
     im_rows, im_cols = L.shape
     tpl_rows = tpl_cols = block_size
-    D_L = np.zeros(L.shape,
-                     dtype=np.float32)
-    for r in range(tpl_rows/2, im_rows-tpl_rows/2+1):
+    D_L = np.zeros(L.shape, dtype=np.float32)
+
+
+    for r in range(tpl_rows/2, im_rows-tpl_rows/2):
         tr_min, tr_max = max(r-tpl_rows/2, 0), min(r+tpl_rows/2+1, im_rows)
-        for c in range(tpl_cols/2, im_cols-tpl_cols/2+1):
+        for c in range(tpl_cols/2, im_cols-tpl_cols/2):
             # get template
             tc_min = max(c-tpl_cols/2, 0)
             tc_max = min(c+tpl_cols/2+1, im_cols)
@@ -57,16 +58,10 @@ def disparity_ssd(L, R, block_size=3, disparity_range=30, lambda_factor=0.1):
             R_strip = R[tr_min:tr_max, rc_min:rc_max].astype(np.float32)
             #  error = my_ssd(R_strip, tpl)  # slow
             #  error = sumsqdiff2(R_strip, tpl) # faster
-            error = cv2.matchTemplate(R_strip, tpl, method=cv2.TM_SQDIFF) # fastest
+            error = cv2.matchTemplate(R_strip, tpl, method=cv2.TM_SQDIFF_NORMED) # fastest
             c_tf = max(c-rc_min-tpl_cols/2, 0)
             dist = np.arange(error.shape[1]) - c_tf
-            cost = error + np.abs(dist) * lambda_factor
+            cost = error + np.abs(dist * lambda_factor)
             _,_,min_loc,_ = cv2.minMaxLoc(cost)
             D_L[r, c] = dist[min_loc[0]]
-
-    # replicate
-    D_L = cv2.copyMakeBorder(D_L[tpl_rows/2:im_rows-tpl_rows/2,
-                                 tpl_cols/2:im_cols-tpl_cols/2],
-                             tpl_rows/2, tpl_rows/2, tpl_cols/2,
-                             tpl_cols/2, borderType=cv2.BORDER_REPLICATE)
     return D_L
