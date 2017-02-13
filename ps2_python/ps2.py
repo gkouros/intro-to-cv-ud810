@@ -184,16 +184,17 @@ def ps2_5():
     cv2.imwrite('output/ps2-5-a-1.png', D_L)
     cv2.imwrite('output/ps2-5-a-2.png', D_R)
 
-ps2_list = [ps2_1, ps2_2, ps2_3, ps2_4, ps2_5]
-if len(sys.argv) == 2:
-    if int(sys.argv[1]) in range(1,6):
-        print('Executing task %d'%(int(sys.argv[1])))
-        ps2_list[int(sys.argv[1])-1]()
+if __name__ == '__main__':
+    ps2_list = [ps2_1, ps2_2, ps2_3, ps2_4, ps2_5]
+    if len(sys.argv) == 2:
+        if int(sys.argv[1]) in range(1,6):
+            print('Executing task %d'%(int(sys.argv[1])))
+            ps2_list[int(sys.argv[1])-1]()
+        else:
+            print('Give argument in range [1,5] for the corresponding tasks')
     else:
-        print('Give argument in range [1,5] for the corresponding tasks')
-else:
-    print('Executing all tasks:')
-    for idx, ps in enumerate(ps2_list):
-        print('Executing task: %d'%(idx+1))
-        ps()
+        print('Executing all tasks:')
+        for idx, ps in enumerate(ps2_list):
+            print('Executing task: %d'%(idx+1))
+            ps()
 
