@@ -25,7 +25,7 @@ def ps3_1_a():
     pt_2d_proj = pt_2d_proj[:2] / pt_2d_proj[2]
     res = np.linalg.norm(pts_2d[-1] - pt_2d_proj)
     print('Results with least squares:')
-    print('M=%s'%M)
+    print('M=\n%s'%M)
     print('Point %s projected to point %s'%(pts_2d[-1] ,pt_2d_proj))
     print('Residual: %.4f\n'%res)
     # test results using a least squares solver
@@ -34,12 +34,12 @@ def ps3_1_a():
     pt_2d_proj = pt_2d_proj[:2] / pt_2d_proj[2]
     res = np.linalg.norm(pts_2d[-1] - pt_2d_proj)
     print('Results with SVD:')
-    print('M=%s'%M)
+    print('M=\n%s'%M)
     print('Point %s projected to point %s'%(pts_2d[-1] ,pt_2d_proj))
     print('Residual: %.4f\n'%res)
 
 
-def ps3_1_b():
+def ps3_1_b(printing=True):
     # a) estimate camera projection matrix
     pts_2d = load_file('input/pts2d-pic_a.txt')
     pts_3d = load_file('input/pts3d.txt')
@@ -54,23 +54,22 @@ def ps3_1_b():
     results_dict = OrderedDict([('res_8', res_8), ('M_8', M_8.flatten()),
                                 ('res_12', res_12), ('M_12', M_12.flatten()),
                                 ('res_16', res_16), ('M_16', M_16.flatten())])
-    f = open('output/ps3-1-b.txt', 'w')
-    for key in results_dict:
-        f.write('%s: %s\n'%(key, results_dict[key]))
-    f.close()
-    print('residual [8]: %.5f, [12]: %.5f, [16]: %.5f\n'%(res_8, res_12, res_16))
     residuals = (res_8, res_12, res_16)
     Ms = (M_8, M_12, M_16)
     res, M = min((res, M) for (res, M) in zip(residuals, Ms))
+    if printing:
+        print('Residuals:\nfor 8 pts: %.5f\nfor 12 pts: %.5f\nfor 16 pts: %.5f\n'%(
+            res_8, res_12, res_16))
+        print('Best Projection Matrix\nM =\n%s\n'%M)
     return M, res
 
 def ps3_1_c():
     # estimate camera center position in the 3D world coordinates
-    M,_ = ps3_1_b()
+    M,_ = ps3_1_b(printing=False)
     Q = M[:, :3]
     m4 = M[:, 3]
     C = np.dot(-np.linalg.inv(Q), m4)
-    print('Center of Camera = %s'%C)
+    print('Center of Camera = %s\n'%C)
 
 def ps3_2_a(printing=True):
     # estimate the Fundamental Matrix between pic_a and pic_b
@@ -78,7 +77,7 @@ def ps3_2_a(printing=True):
     pts_b = load_file('input/pts2d-pic_b.txt')
     F = least_squares_F_solver(pts_a, pts_b)
     if printing:
-        print('Fundametal Matrix with Rank=3: \n%s'%F)
+        print('Fundametal Matrix with Rank=3: \n%s\n'%F)
     return F
 
 def ps3_2_b(printing=True):
@@ -89,7 +88,7 @@ def ps3_2_b(printing=True):
     S = np.diag(S)
     F = np.dot(np.dot(U,S), V)
     if printing:
-        print('Fundametal Matrix with Rank=2: \n%s'%F)
+        print('Fundametal Matrix with Rank=2: \n%s\n'%F)
     return F
 
 def ps3_2_c():
@@ -158,6 +157,10 @@ def ps3_2_d():
     S[-1] = 0
     S = np.diag(S)
     F = np.dot(np.dot(U,S), V)
+    if printing:
+        print('Ta=\n%s\n'%T_a)
+        print('Tb=\n%s\n'%T_b)
+        print('F=\n%s\n'%F)
     return T_a, T_b, F
 
 def ps3_2_e():
@@ -195,9 +198,9 @@ def ps3_2_e():
     # save the images with the highlighted epipolar lines
     cv2.imwrite('output/ps3-2-e-1.png', img_a)
     cv2.imwrite('output/ps3-2-e-2.png', img_b)
-    print('Images with highlighted epipolar lines saved successfully!')
-    print('Fundametal Matrix F=\n%s'%F)
+    print('Fundametal Matrix F=\n%s\n'%F)
     cv2.imshow('', np.hstack((img_a,img_b))); cv2.waitKey(0); cv2.destroyAllWindows()
+    print('Images with highlighted epipolar lines saved successfully!')
 
 ps3_list = OrderedDict([('1a', ps3_1_a), ('1b', ps3_1_b), ('1c', ps3_1_c),
                         ('2a', ps3_2_a), ('2b', ps3_2_b), ('2c', ps3_2_c),
