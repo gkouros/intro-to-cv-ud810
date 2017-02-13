@@ -87,7 +87,7 @@ def ps3_2_b(printing=True):
     U,S,V = np.linalg.svd(F)
     S[-1] = 0
     S = np.diag(S)
-    F = np.dot(np.dot(U,S), V.T) # TODO V or V.T -> see results and decide
+    F = np.dot(np.dot(U,S), V)
     if printing:
         print('Fundametal Matrix with Rank=2: \n%s'%F)
     return F
@@ -104,8 +104,8 @@ def ps3_2_c():
     pts_b = np.column_stack((pts_b, np.ones(pts_a.shape[0])))
     # estimate fundamental matrix
     F = ps3_2_b(printing=False)
-    F,_ = cv2.findFundamentalMat(pts_a, pts_b, method=cv2.FM_8POINT)
-    # find the epipolar lines for each point in both images
+    #  F,_ = cv2.findFundamentalMat(pts_a, pts_b, method=cv2.FM_8POINT)
+    #  find the epipolar lines for each point in both images
     eplines_a = np.dot(F.T, pts_b.T).T
     eplines_b = np.dot(F, pts_a.T).T
     n, m, _ = img_a.shape
@@ -125,18 +125,83 @@ def ps3_2_c():
     cv2.imshow('', np.hstack((img_a,img_b))); cv2.waitKey(0); cv2.destroyAllWindows()
     # save the images with the highlighted epipolar lines
     cv2.imwrite('output/ps3-2-c-1.png', img_a)
-    cv2.imwrite('output/ps3-2-c-b.png', img_b)
+    cv2.imwrite('output/ps3-2-c-2.png', img_b)
     print('Images with highlighted epipolar lines saved successfully!')
 
 def ps3_2_d():
-    pass
+    # load points
+    pts_a = np.array(load_file('input/pts2d-pic_a.txt'))
+    pts_b = np.array(load_file('input/pts2d-pic_b.txt'))
+    # Calculate normalization matrices
+    m_a = np.mean(pts_a, axis=0)
+    m_b = np.mean(pts_b, axis=0)
+    pts_a_temp = np.subtract(pts_a, m_a[None,:])
+    pts_b_temp = np.subtract(pts_b, m_b[None,:])
+    s_a = 1 / np.abs(np.std(pts_a_temp, axis=0)).max()
+    s_b = 1 / np.abs(np.std(pts_b_temp, axis=0)).max()
+    S_a = np.diag([s_a, s_a, 1])
+    S_b = np.diag([s_b, s_b, 1])
+    C_a = np.array([[1, 0, -m_a[0]],[0, 1, -m_a[1]],[0, 0, 1]])
+    C_b = np.array([[1, 0, -m_b[0]],[0, 1, -m_b[1]],[0, 0, 1]])
+    T_a = np.dot(S_a, C_a)
+    T_b = np.dot(S_b, C_b)
+    # convert points to homogenious coordinates
+    pts_a = np.column_stack((pts_a_temp, np.ones(pts_a.shape[0])))
+    pts_b = np.column_stack((pts_b_temp, np.ones(pts_b.shape[0])))
+    # Normalize the points (20x3)*(3x3)
+    pts_a_norm = np.dot(pts_a, T_a)
+    pts_b_norm = np.dot(pts_b, T_b)
+    # Estimate fundamental matrix
+    F = least_squares_F_solver(pts_a_norm, pts_b_norm)
+    # Convert the fundamental matrix to Rank=2
+    U,S,V = np.linalg.svd(F)
+    S[-1] = 0
+    S = np.diag(S)
+    F = np.dot(np.dot(U,S), V)
+    return T_a, T_b, F
 
 def ps3_2_e():
-    pass
+    # load images
+    img_a = cv2.imread('input/pic_a.jpg', cv2.IMREAD_COLOR)
+    img_b = cv2.imread('input/pic_b.jpg', cv2.IMREAD_COLOR)
+    # load points
+    pts_a = np.array(load_file('input/pts2d-pic_a.txt'))
+    pts_b = np.array(load_file('input/pts2d-pic_b.txt'))
+    # convert pts to homogenious coordinates
+    pts_a = np.column_stack((pts_a, np.ones(pts_a.shape[0])))
+    pts_b = np.column_stack((pts_b, np.ones(pts_b.shape[0])))
+    # Estimate fundamental matrix
+    T_a, T_b, F = ps3_2_d()
+    # create better fundamental matrix
+    F = np.dot(T_b.T, np.dot(F, T_a))
+    #  find the epipolar lines for each point in both images
+    eplines_a = np.dot(F.T, pts_b.T).T
+    eplines_b = np.dot(F, pts_a.T).T
+    n, m, _ = img_a.shape
+    line_L = np.cross([0,0,1],[n,0,1])
+    line_R = np.cross([0,m,1],[n,m,1])
+    # draw the epipolar lines on the images
+    for line_a, line_b in zip(eplines_a, eplines_b):
+        P_a_L = np.cross(line_a, line_L)
+        P_a_R = np.cross(line_a, line_R)
+        P_a_L = (P_a_L[:2] / P_a_R[2]).astype(int)
+        P_a_R = (P_a_R[:2] / P_a_R[2]).astype(int)
+        cv2.line(img_a, tuple(P_a_L[:2]), tuple(P_a_R[:2]), (0,255,0), thickness=2)
+        P_b_L = np.cross(line_b, line_L)
+        P_b_R = np.cross(line_b, line_R)
+        P_b_L = (P_b_L[:2] / P_b_R[2]).astype(int)
+        P_b_R = (P_b_R[:2] / P_b_R[2]).astype(int)
+        cv2.line(img_b, tuple(P_b_L[:2]), tuple(P_b_R[:2]), (0,255,0), thickness=2)
+    # save the images with the highlighted epipolar lines
+    cv2.imwrite('output/ps3-2-e-1.png', img_a)
+    cv2.imwrite('output/ps3-2-e-2.png', img_b)
+    print('Images with highlighted epipolar lines saved successfully!')
+    print('Fundametal Matrix F=\n%s'%F)
+    cv2.imshow('', np.hstack((img_a,img_b))); cv2.waitKey(0); cv2.destroyAllWindows()
 
 ps3_list = OrderedDict([('1a', ps3_1_a), ('1b', ps3_1_b), ('1c', ps3_1_c),
                         ('2a', ps3_2_a), ('2b', ps3_2_b), ('2c', ps3_2_c),
-                        ('2d', ps3_2_d)])
+                        ('2d', ps3_2_d), ('2e', ps3_2_e)])
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
