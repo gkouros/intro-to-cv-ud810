@@ -1,4 +1,4 @@
-# Problem Set 0: Images as Functions
+# Problem Set 2: Window-based Stereo Matching
 
 ###1. Stereo correspondence using SSD template matching
 Input stereo image pair (L,R):  

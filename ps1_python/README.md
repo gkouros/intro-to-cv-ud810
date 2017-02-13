@@ -1,4 +1,4 @@
-# Problem Set 0: Images as Functions
+# Problem Set 1: Edges and Lines
 
 ###1. Edge image
 a0) Input image - a1) Edge image  
