@@ -209,13 +209,14 @@ ps3_list = OrderedDict([('1a', ps3_1_a), ('1b', ps3_1_b), ('1c', ps3_1_c),
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         if sys.argv[1] in ps3_list:
-            print('Executing task %s\n=================='%sys.argv[1])
+            print('\nExecuting task %s\n=================='%sys.argv[1])
             ps3_list[sys.argv[1]]()
         else:
-            print('Give argument from {1a,1b,2a,2b,2c,2d} for the corresponding task.')
+            print('\nGive argument from {1a,1b,1c,2a,2b,2c,2d,2e} for the \
+                  corresponding task.')
     else:
-        print('Executing all tasks:\n')
+        print('\nExecuting all tasks:\n')
         for idx in range(len(ps3_list)):
-            print('Executing task: %s\n=================='%ps3_list.keys()[idx])
+            print('\nExecuting task: %s\n=================='%ps3_list.keys()[idx])
             ps3_list.values()[idx]()
 
