@@ -3,33 +3,34 @@ import cv2
 import numpy as np
 import sys
 from collections import OrderedDict
-from calc_grad import *
-from harris_values import *
+import random
+from grad_utils import *
 from harris_corners import *
+from get_keypoints import *
+from get_matches import *
+from draw_keypoints import *
+from ransac_trans import *
+from ransac_sim import *
+from ransac_sim_affine import *
 
 imgs = ['transA.jpg', 'transB.jpg', 'simA.jpg', 'simB.jpg']
 
 # Harris Corners
 # ==============
 def ps4_1_a():
-    img1 = cv2.imread('input/transA.jpg', cv2.IMREAD_GRAYSCALE)
-    img2 = cv2.imread('input/simA.jpg', cv2.IMREAD_GRAYSCALE)
-    # get an analytic derivative of a gaussian filter
-    k_sobel = 3
-    k_gauss = 3
-    s_gauss = 0
-    # calculate the X and Y gradients of the two images using the above filter
-    img1_grad_x = calc_grad_x(img1, k_sobel, k_gauss, s_gauss, norm=True)
-    img1_grad_y = calc_grad_y(img1, k_sobel, k_gauss, s_gauss, norm=True)
-    img2_grad_x = calc_grad_x(img2, k_sobel, k_gauss, s_gauss, norm=True)
-    img2_grad_y = calc_grad_y(img2, k_sobel, k_gauss, s_gauss, norm=True)
-    # save gradient pairs
-    cv2.imwrite('output/ps4-1-a-1.png', np.hstack((img1_grad_x, img1_grad_y)))
-    cv2.imwrite('output/ps4-1-a-2.png', np.hstack((img2_grad_x, img2_grad_y)))
-    # display gradients X,Y of img1 and img2
-    cv2.imshow('', np.hstack((img1_grad_x,img1_grad_y))); cv2.waitKey(0);
-    cv2.imshow('', np.hstack((img2_grad_x,img2_grad_y))); cv2.waitKey(0);
-    cv2.destroyAllWindows()
+    images = imgs[0:3:2]
+    for idx, img in enumerate(images):
+        img = cv2.imread('input/'+img, cv2.IMREAD_GRAYSCALE)
+        k_sobel = 3; k_gauss = 3; s_gauss = 0
+        # calculate the X and Y gradients of the two images using the above filter
+        img_grad_x = calc_grad_x(img, k_sobel, k_gauss, s_gauss, norm=True)
+        img_grad_y = calc_grad_y(img, k_sobel, k_gauss, s_gauss, norm=True)
+        # save the gradient pair
+        cv2.imwrite('output/ps4-1-a-'+str(idx)+'.png', np.hstack((img_grad_x,
+                                                                  img_grad_y)))
+    print('Finished calculating and saved the gradients of the images!')
+        #  cv2.imshow('', np.hstack((img_grad_x, img_grad_y)))
+        # cv2.waitKey(0); cv2.destroyAllWindows()
 
 def ps4_1_b():
     for idx, img_name in enumerate(imgs):
@@ -54,8 +55,6 @@ def ps4_1_c():
                                  threshold=1e-3, nms_size=5)
         img[corners > 0] = [0, 0, 255]
         cv2.imwrite('output/ps4-1-c-'+str(idx+1)+'.png', img)
-        corners = cv2.normalize(corners, corners, alpha=0, beta=255,
-                           norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         #  cv2.imshow('',img); cv2.waitKey(0); cv2.destroyAllWindows()
     print('Finished harris corner detection and saved new images!')
 
@@ -63,29 +62,40 @@ def ps4_1_c():
 # =============
 def ps4_2_a():
     for idx, img_name in enumerate(imgs):
-        # read image form file
-    idx = 0; img_name='simA.jpg'
-    img = cv2.imread('input/'+img_name, cv2.IMREAD_COLOR)
-    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    gray = np.float32(gray)
-    corners = cv2.cornerHarris(gray,2,3,0.06) > 0.001*corners.max()
-    img[corners > 0] = [0, 0, 255]
-    cv2.imwrite('output/ps4-1-c-'+str(idx+1)+'.png', img)
-    corners = cv2.normalize(corners, corners, alpha=0, beta=255,
-                       norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-    #  cv2.imshow('',img); cv2.waitKey(0); cv2.destroyAllWindows()
+        img = cv2.imread('input/'+img_name, cv2.IMREAD_COLOR)
+        img, keypoints = get_keypoints(img)
+        cv2.imwrite('output/ps4-2-a-'+str(idx+1)+'.png', img)
+    print('Finished keypoint detection and saved drawn images!')
 
 
 def ps4_2_b():
-    pass
+    for idx in range(len(imgs)/2):
+        img1 = cv2.imread('input/'+imgs[2*idx], cv2.IMREAD_COLOR)
+        img2 = cv2.imread('input/'+imgs[2*idx+1], cv2.IMREAD_COLOR)
+        matching = draw_keypoints(img1, img2)
+        cv2.imwrite('output/ps4-2-b-'+str(idx+1)+'.png', matching)
+    print('Finished keypoint detection and saved matched keypoints!')
+
 # RANSAC
 # ======
 def ps4_3_a():
-    pass
+    transA = cv2.imread('input/transA.jpg', cv2.IMREAD_COLOR)
+    transB = cv2.imread('input/transB.jpg', cv2.IMREAD_COLOR)
+    matching = ransac_trans(transA, transB)
+    cv2.imwrite('output/ps4-3-a-1.png', matching)
+
 def ps4_3_b():
-    pass
+    simA = cv2.imread('input/simA.jpg', cv2.IMREAD_COLOR)
+    simB = cv2.imread('input/simB.jpg', cv2.IMREAD_COLOR)
+    matching = ransac_sim(simA, simB)
+    cv2.imwrite('output/ps4-3-b-1.png', matching)
+
 def ps4_3_c():
-    pass
+    simA = cv2.imread('input/simA.jpg', cv2.IMREAD_COLOR)
+    simB = cv2.imread('input/simB.jpg', cv2.IMREAD_COLOR)
+    matching = ransac_sim_affine(simA, simB)
+    cv2.imwrite('output/ps4-3-c-1.png', matching)
+
 def ps4_3_d():
     pass
 def ps4_3_e():

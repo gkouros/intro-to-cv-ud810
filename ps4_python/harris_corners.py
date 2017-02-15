@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
-from harris_values import *
-from calc_grad import *
+from grad_utils import *
 
 def harris_values(img, window_size=5, harris_scoring=0.04, norm=False):
     # calculate image gradients on x and y dimensions
