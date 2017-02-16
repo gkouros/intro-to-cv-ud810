@@ -4,7 +4,9 @@ import random
 from get_matches import *
 
 def ransac_sim(simA, simB):
-    img1, img2, kpts1, kpts2, matches = get_matches(simA, simB)
+    _, _, kpts1, kpts2, matches = get_matches(simA, simB)
+    img1 = simA
+    img2 = simB
     tolerance = 1 # used when comparing similarity matrices of match pairs
     #  best_match = 0
     consensus_set = []
@@ -27,12 +29,12 @@ def ransac_sim(simA, simB):
         Sim = np.array([[Sim[0], -Sim[1], Sim[2]],
                         [Sim[1], Sim[0], Sim[3]]])
         temp_consensus_set = []
-        for j in range(len(matches) / 2):
+        for j in range(len(matches) - 1):
             match = matches[j]
-            kp11 = kpts1[matches[2*j].queryIdx]
-            kp12 = kpts2[matches[2*j].trainIdx]
-            kp21 = kpts1[matches[2*j+1].queryIdx]
-            kp22 = kpts2[matches[2*j+1].trainIdx]
+            kp11 = kpts1[matches[j].queryIdx]
+            kp12 = kpts2[matches[j].trainIdx]
+            kp21 = kpts1[matches[j+1].queryIdx]
+            kp22 = kpts2[matches[j+1].trainIdx]
             A = np.array([[kp11.pt[0], -kp11.pt[1], 1, 0],
                           [kp11.pt[1], kp11.pt[0], 0, 1],
                           [kp21.pt[0], -kp21.pt[1], 1, 0],
@@ -42,8 +44,8 @@ def ransac_sim(simA, simB):
             Sim2 = np.array([[Sim2[0], -Sim2[1], Sim2[2]],
                              [Sim2[1], Sim2[0], Sim2[3]]])
             if (np.array(np.abs(Sim-Sim2)) < tolerance).all():
-                temp_consensus_set.append(2*j)
-                temp_consensus_set.append(2*j+1)
+                temp_consensus_set.append(j)
+                temp_consensus_set.append(j+1)
         if len(temp_consensus_set) > len(consensus_set):
             consensus_set = temp_consensus_set
             #  best_match = idxs
@@ -55,4 +57,4 @@ def ransac_sim(simA, simB):
                                     flags=2, outImg=matched_image)
     print('Best match:\nSim=\n%s\n with consensus=%d or %d%%'%(
         best_sim, len(consensus_set)/2, 100*len(consensus_set)/2/len(matches)))
-    return matched_image
+    return matched_image, best_sim

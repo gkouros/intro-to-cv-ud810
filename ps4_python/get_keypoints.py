@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from harris_corners import *
 
-def get_keypoints(img):
+def get_keypoints(img, draw_keypoints=True):
     if len(img) > 1:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).astype(np.float32)
 
@@ -26,6 +26,7 @@ def get_keypoints(img):
         kp = cv2.KeyPoint(c, r, _size=10, _angle=np.rad2deg(O[r,c]), _octave=0)
         keypoints.append(kp)
     # draw the keypoints on the image
-    cv2.drawKeypoints(img, keypoints, img,
-                      flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+    if draw_keypoints:
+        cv2.drawKeypoints(img, keypoints, img,
+                          flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     return img, keypoints

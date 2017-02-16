@@ -87,19 +87,48 @@ def ps4_3_a():
 def ps4_3_b():
     simA = cv2.imread('input/simA.jpg', cv2.IMREAD_COLOR)
     simB = cv2.imread('input/simB.jpg', cv2.IMREAD_COLOR)
-    matching = ransac_sim(simA, simB)
+    matching,_ = ransac_sim(simA, simB)
     cv2.imwrite('output/ps4-3-b-1.png', matching)
 
 def ps4_3_c():
     simA = cv2.imread('input/simA.jpg', cv2.IMREAD_COLOR)
     simB = cv2.imread('input/simB.jpg', cv2.IMREAD_COLOR)
-    matching = ransac_sim_affine(simA, simB)
+    matching,_ = ransac_sim_affine(simA, simB)
     cv2.imwrite('output/ps4-3-c-1.png', matching)
 
 def ps4_3_d():
-    pass
+    simA = cv2.imread('input/simA.jpg', cv2.IMREAD_COLOR)
+    simB = cv2.imread('input/simB.jpg', cv2.IMREAD_COLOR)
+    _,transform = ransac_sim(simA, simB)
+    if len(transform) == 0:
+        print('Failed to calculate affine transform!')
+        return
+    warpedB = cv2.warpAffine(simB, transform, simB.shape[1::-1],
+                             flags=cv2.WARP_INVERSE_MAP)
+    blend = warpedB * 0.5
+    blend[:simA.shape[0], :simA.shape[1]] += simA * 0.5
+    blend = cv2.normalize(blend, blend, alpha=0, beta=255,
+                           norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+    cv2.imshow('', blend)
+    cv2.waitKey(0); cv2.destroyAllWindows()
+    cv2.imwrite('output/ps4-3-d-1.png', blend)
+
 def ps4_3_e():
-    pass
+    simA = cv2.imread('input/simA.jpg', cv2.IMREAD_COLOR)
+    simB = cv2.imread('input/simB.jpg', cv2.IMREAD_COLOR)
+    _,transform = ransac_sim_affine(simA, simB)
+    if len(transform) == 0:
+        print('Failed to calculate affine transform!')
+        return
+    warpedB = cv2.warpAffine(simB, transform, simB.shape[1::-1],
+                            flags=cv2.WARP_INVERSE_MAP)
+    blend = warpedB * 0.5
+    blend[:simA.shape[0], :simA.shape[1]] += simA * 0.5
+    blend = cv2.normalize(blend, blend, alpha=0, beta=255,
+                           norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+    cv2.imshow('', blend)
+    cv2.waitKey(0); cv2.destroyAllWindows()
+    cv2.imwrite('output/ps4-3-e-1.png', blend)
 
 ps4_list = OrderedDict([('1a', ps4_1_a), ('1b', ps4_1_b), ('1c', ps4_1_c),
                         ('2a', ps4_2_a), ('2b', ps4_2_b), ('3a', ps4_3_a),

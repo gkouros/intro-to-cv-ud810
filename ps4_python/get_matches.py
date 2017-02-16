@@ -3,8 +3,8 @@ import numpy as np
 from get_keypoints import *
 
 def get_matches(img1, img2):
-    img1_feat, kpts1 = get_keypoints(img1)
-    img2_feat, kpts2 = get_keypoints(img2)
+    img1_feat, kpts1 = get_keypoints(img1, draw_keypoints=False)
+    img2_feat, kpts2 = get_keypoints(img2, draw_keypoints=False)
 
     # create sift instance
     sift = cv2.xfeatures2d.SIFT_create()
