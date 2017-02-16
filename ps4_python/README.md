@@ -1,4 +1,4 @@
-# Problem Set 3: Geometry
+# Problem Set 4: Harris Corners, SIFT & RANSAC
 
 ###1. Harris Corners
 ##### a) X and Y image gradients 
