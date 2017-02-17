@@ -7,7 +7,7 @@ def get_keypoints(img, draw_keypoints=True):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).astype(np.float32)
 
     # find harris corners -> keypoints
-    # !!! Uses opencv builtin detector, since it's faster
+    # !!! Uses opencv builtin detector, since it's faster than mine
     corners = cv2.cornerHarris(gray,2,3,0.04)
     corners = cv2.normalize(corners, corners, alpha=0, beta=255,
                        norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)

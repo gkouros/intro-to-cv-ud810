@@ -21,12 +21,11 @@ def ps4_1_a():
     images = imgs[0:3:2]
     for idx, img in enumerate(images):
         img = cv2.imread('input/'+img, cv2.IMREAD_GRAYSCALE)
-        k_sobel = 3; k_gauss = 3; s_gauss = 0
         # calculate the X and Y gradients of the two images using the above filter
-        img_grad_x = calc_grad_x(img, k_sobel, k_gauss, s_gauss, norm=True)
-        img_grad_y = calc_grad_y(img, k_sobel, k_gauss, s_gauss, norm=True)
+        img_grad_x = calc_grad_x(img, 3, norm=True)
+        img_grad_y = calc_grad_y(img, 3, norm=True)
         # save the gradient pair
-        cv2.imwrite('output/ps4-1-a-'+str(idx)+'.png', np.hstack((img_grad_x,
+        cv2.imwrite('output/ps4-1-a-'+str(idx+1)+'.png', np.hstack((img_grad_x,
                                                                   img_grad_y)))
     print('Finished calculating and saved the gradients of the images!')
         #  cv2.imshow('', np.hstack((img_grad_x, img_grad_y)))

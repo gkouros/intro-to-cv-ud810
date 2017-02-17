@@ -4,8 +4,8 @@ from grad_utils import *
 
 def harris_values(img, window_size=5, harris_scoring=0.04, norm=False):
     # calculate image gradients on x and y dimensions
-    Ix = calc_grad_x(img, 3, 3, 0)
-    Iy = calc_grad_y(img, 3, 3, 0)
+    Ix = calc_grad_x(img, 3)
+    Iy = calc_grad_y(img, 3)
     Ixx = Ix ** 2
     Ixy = Ix * Iy
     Iyx = Iy * Ix
