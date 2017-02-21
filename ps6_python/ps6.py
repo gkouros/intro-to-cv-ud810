@@ -2,24 +2,23 @@
 import cv2
 import numpy as np
 import sys
+import time
 from collections import OrderedDict
+from naive_pf_tracker_demo import *
 
 '''
 Problem Set 6: Particle Tracking
 '''
 
-# TODO 1. Particle Filter Tracking
+videos = ['pres_debate', 'noisy_debate', 'pedestrians']
+
+# 1. Particle Filter Tracking
 # ================================
 def ps6_1_a():
-    pass
-def ps6_1_b():
-    pass
-def ps6_1_c():
-    pass
-def ps6_1_d():
-    pass
+    naive_pf_tracker_demo(videos[0], [28,84,144], 'a', play_video=True)
+
 def ps6_1_e():
-    pass
+    naive_pf_tracker_demo(videos[1], [14,32,46], 'e', play_video=True)
 
 # TODO 2. Appearance Model Update
 # ===============================
@@ -43,8 +42,7 @@ def ps6_4_a():
 def ps6_4_b():
     pass
 
-ps6_list = OrderedDict([('1a', ps6_1_a), ('1b', ps6_1_b), ('1c', ps6_1_c),
-                        ('1d', ps6_1_d), ('1e', ps6_1_e), ('2a', ps6_2_a),
+ps6_list = OrderedDict([('1a', ps6_1_a), ('1e', ps6_1_e), ('2a', ps6_2_a),
                         ('2b', ps6_2_b), ('3a', ps6_3_a), ('3b', ps6_3_b),
                         ('4a', ps6_4_a), ('4b', ps6_4_b)])
 
