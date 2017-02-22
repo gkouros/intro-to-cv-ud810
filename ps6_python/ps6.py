@@ -15,10 +15,14 @@ videos = ['pres_debate', 'noisy_debate', 'pedestrians']
 # 1. Particle Filter Tracking
 # ================================
 def ps6_1_a():
-    naive_pf_tracker_demo(videos[0], [28,84,144], 'a', play_video=True)
+    naive_pf_tracker_demo(videos[0], [28,84,144], 'a', play_video=True,
+                         num_particles=100, dimensions=2, control=10, noise=10,
+                         sim_std=30)
 
 def ps6_1_e():
-    naive_pf_tracker_demo(videos[1], [14,32,46], 'e', play_video=True)
+    naive_pf_tracker_demo(videos[1], [14,32,46], 'e', play_video=True,
+                          num_particles=100, dimensions=2, control=10, noise=10,
+                          sim_std=20)
 
 # TODO 2. Appearance Model Update
 # ===============================

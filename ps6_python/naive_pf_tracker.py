@@ -37,19 +37,18 @@ class NaivePFTracker:
         noisy_control = control + np.random.normal(0, self.control_noise,
                                                    (self.num_particles, 2))
         # sample x_t^i from p(x_t | x_t-1, u_t) using x_t^j and u_t
-        new_particles = self.particles[j] + noisy_control
+        new_particles = np.array(self.particles[j] + noisy_control)
         # clip particles in case the window goes out of the image limits
         new_particles[:,0] = np.clip(new_particles[:,0], mh/2, sh - mh/2 - 1)
         new_particles[:,1] = np.clip(new_particles[:,1], mw/2, sw - mw/2 - 1)
-
-        # resampling loop
-        for i in range(self.num_particles):
-            # get patch corresponding to particle i
-            miny = int(new_particles[i,0] - mh/2); maxy = miny + mh
-            minx = int(new_particles[i,1] - mw/2); maxx = minx + mw
-            candidate = img[miny:maxy, minx:maxx]
-            # compute importance weight - similarity of patch to model
-            new_weights[i] = similarity(candidate, self.model, self.sim_std)
+        # get patches corresponding to particle i
+        miny = (new_particles[:,0] - mh/2).astype(np.int); maxy = miny + mh
+        minx = (new_particles[:,1] - mw/2).astype(np.int); maxx = minx + mw
+        candidates = [img[miny[i]:maxy[i], minx[i]:maxx[i]]
+                      for i in range(self.num_particles)]
+        # compute importance weight - similarity of each patch to the model
+        new_weights = np.array([similarity(cand, self.model, self.sim_std)
+                               for cand in candidates])
 
         # normalize new weights
         new_weights /= np.sum(new_weights)
@@ -61,8 +60,10 @@ class NaivePFTracker:
         # estimate current state - weighted mean of particle states
         self.state = (self.particles * self.weights.reshape((-1, 1))).sum(0)
 
-        # draw results on img
-        #  self.visualize_filter(img)
+    def visualize_filter(self, img):
+        self.draw_particles(img)
+        self.draw_window(img)
+        self.draw_std(img)
 
     def draw_particles(self, img):
         for p in self.particles:
@@ -80,7 +81,3 @@ class NaivePFTracker:
         cv2.circle(img, tuple(self.state[::-1].astype(np.int)),
                    int(weighted_sum), (255,255,255), 1)
 
-    def visualize_filter(self, img):
-        self.draw_particles(img)
-        self.draw_window(img)
-        self.draw_std(img)

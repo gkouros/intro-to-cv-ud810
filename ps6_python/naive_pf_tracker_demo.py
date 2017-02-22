@@ -3,7 +3,9 @@ import numpy as np
 import time
 from naive_pf_tracker import *
 
-def naive_pf_tracker_demo(videofile, frames_to_save=[], infix='a', play_video=True):
+def naive_pf_tracker_demo(videofile, frames_to_save=[], infix='a',
+                          play_video=True, num_particles=100, dimensions=2,
+                          control=10, noise=10, sim_std=20):
     cap = cv2.VideoCapture('input/' + videofile + '.avi')
 
     # retrieve first frame
@@ -22,7 +24,8 @@ def naive_pf_tracker_demo(videofile, frames_to_save=[], infix='a', play_video=Tr
     cv2.imwrite('output/ps6-1-' + infix +'-1.png', frame[miny:maxy, minx:maxx])
 
     # create tracker
-    tracker = NaivePFTracker(model, search_space, 100, 2, 10, 10, 20)
+    tracker = NaivePFTracker(model, search_space, num_particles, dimensions,
+                             control, noise, sim_std)
 
     count = 1  # a frame has already been retrieved
     save_count=0  # count of the highlighted frames that will be saved
