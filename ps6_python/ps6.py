@@ -15,7 +15,7 @@ videos = ['pres_debate', 'noisy_debate', 'pedestrians']
 textfiles = ['pres_debate', 'noisy_debate', 'pedestrians', 'pres_debate_hand']
 
 # 1. Particle Filter Tracking
-# ================================
+# ===========================
 def ps6_1_a():
     naive_pf_tracker_demo(videos[0], textfiles[0], [28,84,144], '1-a',
                           play_video=True, num_particles=100, dimensions=2,
@@ -27,7 +27,7 @@ def ps6_1_e():
                           control=10, sim_std=10, alpha=0)
 
 # 2. Appearance Model Update
-# ===============================
+# ==========================
 def ps6_2_a():
     naive_pf_tracker_demo(videos[0], textfiles[3], [15,50,140], '2-a',
                           play_video=True, num_particles=700, dimensions=2,
@@ -39,7 +39,7 @@ def ps6_2_b():
                           control=10, sim_std=2, alpha=0.2)
 
 # 3. Mean-Shift Lite
-# =======================
+# ==================
 def ps6_3_a():
     msl_pf_tracker_demo(videos[0], textfiles[0], [28,84,144], '3-a',
                         play_video=True, num_particles=1000, dimensions=2,
@@ -63,7 +63,7 @@ ps6_list = OrderedDict([('1a', ps6_1_a), ('1e', ps6_1_e), ('2a', ps6_2_a),
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         if sys.argv[1] in ps6_list:
-            print('\nExecuting task %s\n=================='%sys.argv[1])
+            print('Executing task %s'%sys.argv[1])
             ps6_list[sys.argv[1]]()
         else:
             print('\nGive argument from list \n%s\nfor the corresponding task.'
@@ -71,6 +71,6 @@ if __name__ == '__main__':
     else:
         print('\n * Executing all tasks: * \n')
         for idx in range(len(ps6_list)):
-            print('\nExecuting task: %s\n=================='%
+            print('Executing task: %s'%
                   ps6_list.keys()[idx])
             ps6_list.values()[idx]()
