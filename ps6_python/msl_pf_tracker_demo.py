@@ -1,34 +1,38 @@
 import cv2
 import numpy as np
 import time
-from naive_pf_tracker import *
+from msl_pf_tracker import *
 
-def naive_pf_tracker_demo(videofile, textfile, frames_to_save=[], infix='a',
-                          play_video=True, num_particles=100, dimensions=2,
-                          control=10, sim_std=20, alpha=0):
+def msl_pf_tracker_demo(videofile, textfile, frames_to_save=[], infix='a',
+                        play_video=True, num_particles=100, dimensions=2,
+                        control=10, sim_std=20, alpha=0):
+
     cap = cv2.VideoCapture('input/' + videofile + '.avi')
 
     # retrieve first frame
     ret, frame = cap.read()  # get frame
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # convert frame to rgb
-    search_space = np.array(gray.shape)
     if not ret:
         print('Could not retrieve initial frame for initialization!')
+        quit()
+
+    # get dimensions of image
+    search_space = np.array(frame.shape[:2])
 
     # load model coordinates file and retrieve model from first frame
     f = open('input/' + textfile + '.txt', 'r').read().split()
     s = {'x': float(f[0]), 'y': float(f[1]), 'w': float(f[2]), 'h': float(f[3])}
     miny = int(s['y']); maxy = int(miny + s['h'])
     minx = int(s['x']); maxx = int(minx + s['w'])
-    model = gray[miny:maxy, minx:maxx]
+    model = frame[miny:maxy, minx:maxx]
     cv2.imwrite('output/ps6-' + infix +'-1.png', frame[miny:maxy, minx:maxx])
 
     # create tracker
-    tracker = NaivePFTracker(model, search_space, num_particles, dimensions,
-                             control, sim_std, alpha)
+    tracker = MSLPFTracker(model, search_space, num_particles, dimensions,
+                           control, sim_std, alpha)
 
     count = 1  # a frame has already been retrieved
     save_count=0  # count of the highlighted frames that will be saved
+
     while cap.isOpened():
         start_time = time.time()
 
@@ -37,18 +41,15 @@ def naive_pf_tracker_demo(videofile, textfile, frames_to_save=[], infix='a',
         if not ret:
             break
         count += 1
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         # track model in frame
-        tracker.update(gray)
+        tracker.update(frame)
 
         # visualize particle filter results in colored frame
         tracker.visualize_filter(frame)
-        if len(tracker.model.shape) < 3:
-            color_model = cv2.cvtColor(tracker.model, cv2.COLOR_GRAY2BGR)
 
-        frame[:model.shape[0], :model.shape[1]] = color_model
-
+        # insert the tracking model on the top left corner of the frame
+        frame[:model.shape[0], :model.shape[1]] = tracker.model
 
         # add delay in order to adjust frame rate to about 40Hz
         delay = int(25 - (time.time() - start_time))

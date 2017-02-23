@@ -5,39 +5,49 @@ import sys
 import time
 from collections import OrderedDict
 from naive_pf_tracker_demo import *
+from msl_pf_tracker_demo import *
 
 '''
 Problem Set 6: Particle Tracking
 '''
 
 videos = ['pres_debate', 'noisy_debate', 'pedestrians']
+textfiles = ['pres_debate', 'noisy_debate', 'pedestrians', 'pres_debate_hand']
 
 # 1. Particle Filter Tracking
 # ================================
 def ps6_1_a():
-    naive_pf_tracker_demo(videos[0], [28,84,144], 'a', play_video=True,
-                         num_particles=100, dimensions=2, control=10, noise=10,
-                         sim_std=30)
+    naive_pf_tracker_demo(videos[0], textfiles[0], [28,84,144], '1-a',
+                          play_video=True, num_particles=100, dimensions=2,
+                          control=10, sim_std=20, alpha=0)
 
 def ps6_1_e():
-    naive_pf_tracker_demo(videos[1], [14,32,46], 'e', play_video=True,
-                          num_particles=100, dimensions=2, control=10, noise=10,
-                          sim_std=20)
+    naive_pf_tracker_demo(videos[1], textfiles[1], [14,32,46], '1-e',
+                          play_video=True, num_particles=100, dimensions=2,
+                          control=10, sim_std=10, alpha=0)
 
-# TODO 2. Appearance Model Update
+# 2. Appearance Model Update
 # ===============================
 def ps6_2_a():
-    pass
+    naive_pf_tracker_demo(videos[0], textfiles[3], [15,50,140], '2-a',
+                          play_video=True, num_particles=700, dimensions=2,
+                          control=10, sim_std=5, alpha=0.1)
 
 def ps6_2_b():
-    pass
+    naive_pf_tracker_demo(videos[1], textfiles[3], [15,50,140], '2-b',
+                          play_video=True, num_particles=1000, dimensions=2,
+                          control=10, sim_std=2, alpha=0.2)
 
-# TODO 3. Mean-Shift Lite
+# 3. Mean-Shift Lite
 # =======================
 def ps6_3_a():
-    pass
+    msl_pf_tracker_demo(videos[0], textfiles[0], [28,84,144], '3-a',
+                        play_video=True, num_particles=1000, dimensions=2,
+                        control=5, sim_std=10, alpha=0)
 def ps6_3_b():
-    pass
+    msl_pf_tracker_demo(videos[0], textfiles[3], [15,50,140], '3-b',
+                        play_video=True, num_particles=1000, dimensions=2,
+                        control=10, sim_std=1, alpha=0.1)
 
 # TODO 4. Incorporating More Dynamics
 # ===================================
