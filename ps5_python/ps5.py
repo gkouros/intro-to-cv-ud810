@@ -25,14 +25,14 @@ def ps5_1_a():
     #  fr1 = cv2.imread('input/DataSeq2/0.png', cv2.IMREAD_GRAYSCALE)
     #  fr2 = cv2.imread('input/DataSeq2/1.png', cv2.IMREAD_GRAYSCALE)
     #  fr3 = cv2.imread('input/DataSeq2/2.png', cv2.IMREAD_GRAYSCALE)
-    #  flow12 = cv2.calcOpticalFlowFarneback(fr2, fr1, None,
+    #  flow12 = cv2.calcOpticalFlowFarneback(fr1, fr2, None,
                                           #  0.5, 3, 15, 3, 5, 1.2, 0)
-    flow12 = lk_optic_flow(fr2, fr1, 15)
+    flow12 = lk_optic_flow(fr1, fr2, 15)
     flow13 = lk_optic_flow(fr1, fr3, 15)
     vis_optic_flow_arrows(fr1, flow12, 'output/ps5-1-a-1.png', show=False)
     vis_optic_flow_arrows(fr1, flow13, 'output/ps5-1-a-2.png', show=False)
-    #  cv2.imwrite('output/lala/flow1.jpg', vis_optic_flow(flow12))
-    #  cv2.imwrite('output/lala/flow2.jpg', vis_optic_flow(flow13))
+    cv2.imwrite('output/lala/flow1.jpg', vis_optic_flow(flow12))
+    cv2.imwrite('output/lala/flow2.jpg', vis_optic_flow(flow13))
 
 
 
@@ -73,7 +73,6 @@ def ps5_3_a_1():
     plot_n_save('output/ps5-3-a-2.png', diffs)
     cv2.imwrite('input/DataSeq1/yos_img_1_warped.jpg', warps[0])
     cv2.imwrite('input/DataSeq1/yos_img_2_warped.jpg', warps[1])
-    vis = []
     for i, flow in enumerate(flows):
         cv2.imwrite('output/lala/flow1'+str(i)+'.jpg', vis_optic_flow(flow))
 
@@ -82,10 +81,9 @@ def ps5_3_a_2():
     path = lambda i: 'input/DataSeq2/' + str(i) + '.png'
     frs = np.array([cv2.imread(path(i), cv2.IMREAD_GRAYSCALE) for i in range(3)])
     # apply LK to the sequence of images using constant level
-    flows, warps, diffs = single_level_lk(frs, levels=2, window=25)
+    flows, warps, diffs = single_level_lk(frs, levels=3, window=7)
     vis_optic_flow_arrows_multi(frs, flows, 'output/ps5-3-a-3.png')
     plot_n_save('output/ps5-3-a-4.png', diffs)
-    vis = []
     for i, flow in enumerate(flows):
         cv2.imwrite('output/lala/flow2'+str(i)+'.png', vis_optic_flow(flow))
 

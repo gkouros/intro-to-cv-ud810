@@ -40,7 +40,7 @@ def vis_optic_flow_arrows_multi(images, flows, filename, show=False):
         plot_idx = rows * 100 + cols * 10 + 1 + idx
         plt.subplot(plot_idx)
         plt.imshow(img, cmap='gray', interpolation='bicubic')
-        step=img.shape[0] / 15
+        step=img.shape[0] / 30
         x = np.arange(0, img.shape[1], 1)
         y = np.arange(0, img.shape[0], 1)
         x, y = np.meshgrid(x, y)

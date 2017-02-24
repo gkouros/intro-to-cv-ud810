@@ -10,7 +10,7 @@ def single_level_lk(frs, levels, window):
     #  flows = [cv2.calcOpticalFlowFarneback(gpyrs[i][0], gpyrs[i+1][0], None,
                                            #  0.5, 3, window, 3, 5, 1.2, 0)
              #  for i in range(len(frs)-1)]
-    flows = [lk_optic_flow(frs[i], frs[i+1], window)#gpyrs[i][-1], gpyrs[i+1][-1], window)
+    flows = [-lk_optic_flow(frs[i], frs[i+1], window)#gpyrs[i][-1], gpyrs[i+1][-1], window)
              for i in range(len(frs)-1)]
     #  for i in range(len(flows)):
         #  for j in range(levels-1):
