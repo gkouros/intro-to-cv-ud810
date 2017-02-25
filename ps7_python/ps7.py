@@ -26,7 +26,7 @@ def ps7_1_a():
     for idx in [10,20,30]:
         bf = binary_seq[idx]
         cv2.normalize(bf, bf, 0, 255, cv2.NORM_MINMAX)
-        cv2.imwrite('output/ps7-1-a-'+str(idx)+'.png', bf)
+        cv2.imwrite('output/ps7-1-a-'+str(idx/10)+'.png', bf)
 
 def ps7_1_b():
     t_end = [35, 30, 30]
