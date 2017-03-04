@@ -6,7 +6,7 @@ from find_circles import *
 from hough_circles_draw import *
 from auto_canny import *
 
-def ps1_5_fun():
+def ps1_5():
     start_time = time.time()
     # 5a: Load coin image, smooth, detect edges and calculate hough space
     img = cv2.imread('input/ps1-input1.png', cv2.IMREAD_COLOR)

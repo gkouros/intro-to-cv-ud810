@@ -5,7 +5,7 @@ from hough_lines_acc import *
 from hough_peaks import *
 from hough_lines_draw import *
 
-def ps1_3_fun():
+def ps1_3():
     start_time = time.time()
     noisy_img = cv2.imread('input/ps1-input0-noise.png', cv2.IMREAD_GRAYSCALE)
     #  3a: smooth the noisy image using gaussian blurring

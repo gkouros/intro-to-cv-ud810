@@ -6,7 +6,7 @@ from hough_peaks import *
 from hough_lines_draw import *
 from auto_canny import *
 
-def ps1_4_fun():
+def ps1_4():
     start_time = time.time()
     #  4a: Load the coin image, smooth it (gaussian blur) and save it
     img = cv2.imread('input/ps1-input1.png', cv2.IMREAD_GRAYSCALE)

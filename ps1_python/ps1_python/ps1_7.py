@@ -6,7 +6,7 @@ from find_circles import *
 from hough_circles_draw import *
 from auto_canny import *
 
-def ps1_7_fun():
+def ps1_7():
     start_time = time.time()
     img = cv2.imread('input/ps1-input2.png')
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

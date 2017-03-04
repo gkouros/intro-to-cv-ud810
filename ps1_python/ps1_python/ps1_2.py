@@ -6,7 +6,7 @@ from hough_peaks import *
 from hough_lines_draw import *
 from auto_canny import *
 
-def ps1_2_fun():
+def ps1_2():
     start_time = time.time()
     # load input image and perform edge detection
     img = cv2.imread('input/ps1-input0.png', cv2.IMREAD_GRAYSCALE)

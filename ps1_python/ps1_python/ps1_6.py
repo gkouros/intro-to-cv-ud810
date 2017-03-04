@@ -7,7 +7,7 @@ from hough_peaks import *
 from hough_lines_draw import *
 from filter_lines import *
 
-def ps1_6_fun():
+def ps1_6():
     start_time = time.time()
     img = cv2.imread('input/ps1-input2.png', cv2.IMREAD_COLOR)
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

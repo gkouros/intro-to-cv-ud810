@@ -9,7 +9,7 @@ from filter_lines import *
 from find_circles import *
 from hough_circles_draw import *
 
-def ps1_8_fun():
+def ps1_8():
     start_time = time.time()
     img = cv2.imread('input/ps1-input3.png', cv2.IMREAD_COLOR)
     smoothed_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
