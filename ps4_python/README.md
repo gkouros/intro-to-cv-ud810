@@ -1,6 +1,6 @@
 # Problem Set 4: Harris Corners, SIFT & RANSAC
 
-###1. Harris Corners
+### 1. Harris Corners
 ##### a) X and Y image gradients 
 Input image simA.jpg and corresponding gradients in X and Y axes:  
 <img src="input/simA.jpg" width="200">
@@ -27,7 +27,7 @@ Images with Harris Corners marked:
 <img src="output/ps4-1-c-4.png" width="200">
 
 
-###2. SIFT Features
+### 2. SIFT Features
 ##### a) Interest Points on trans and sim image pairs
 <img src="output/ps4-2-a-1.png" width="200">
 <img src="output/ps4-2-a-2.png" width="200">
@@ -36,7 +36,7 @@ Images with Harris Corners marked:
 <img src="output/ps4-2-b-2.png" width="400">
 
 
-### 3. RANSAC
+###  3. RANSAC
 ##### a) Largest consensus set drawn on the trans image pair
 <img src="output/ps4-3-a-1.png" width="400">
 ##### b) Largest consensus set drawn on the sim image pair using similarity transform comparison

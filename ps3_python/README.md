@@ -1,6 +1,6 @@
 # Problem Set 3: Geometry
 
-###1. Calibration
+### 1. Calibration
 a) Projection matrix via the least squares method or SVD on 20 2d-3d point pairs:  
 <img src="output/ps3-1-a-1.png" width="300">  
 b) Projection matrix estimation using 8, 12 and 16 point pairs:  
@@ -9,7 +9,7 @@ c) Camera position on a 3D world coordinate system:
 <img src="output/ps3-1-c-1.png" width="400">
 
 
-###2. Fundamental Matrix Estimation
+### 2. Fundamental Matrix Estimation
 a) Fundamental Matrix Estimation using the least squares method on 20 2d point pair:  
 <img src="output/ps3-2-a-1.png" width="300">  
 b) Fundamental Matrix Rank Reduction from 3 to 2:  
